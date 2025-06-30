@@ -1,82 +1,56 @@
 package Dominio.Reportes.Modelo;
 
-import java.io.*;
-import java.util.*;
+import java.util.Objects;
 
-/**
- * 
- */
 public class Ubicacion {
 
-    /**
-     * Default constructor
-     */
-    public Ubicacion() {
-    }
-
-    /**
-     * 
-     */
     private Double latitud;
-
-    /**
-     * 
-     */
     private Double longitud;
-
-    /**
-     * 
-     */
     private String direccion;
 
-    /**
-     * @param latitud 
-     * @param longitud 
-     * @param direccion
-     */
     public Ubicacion(Double latitud, Double longitud, String direccion) {
-        // TODO implement here
+        // Validaciones básicas, ej., que no sean nulos para ubicaciones requeridas
+        if (latitud == null || longitud == null || direccion == null || direccion.trim().isEmpty()) {
+            throw new IllegalArgumentException("Latitud, longitud y dirección no pueden ser nulos o vacíos.");
+        }
+        this.latitud = latitud;
+        this.longitud = longitud;
+        this.direccion = direccion;
     }
 
-    /**
-     * @return
-     */
     public Double getLatitud() {
-        // TODO implement here
-        return null;
+        return latitud;
     }
 
-    /**
-     * @return
-     */
     public Double getLongitud() {
-        // TODO implement here
-        return null;
+        return longitud;
     }
 
-    /**
-     * @return
-     */
     public String getDireccion() {
-        // TODO implement here
-        return "";
+        return direccion;
     }
 
-    /**
-     * @param other 
-     * @return
-     */
-    public boolean equals(Ubicacion other) {
-        // TODO implement here
-        return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ubicacion ubicacion = (Ubicacion) o;
+        return Objects.equals(latitud, ubicacion.latitud) &&
+               Objects.equals(longitud, ubicacion.longitud) &&
+               Objects.equals(direccion, ubicacion.direccion);
     }
 
-    /**
-     * @return
-     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitud, longitud, direccion);
+    }
+
+    @Override
     public String toString() {
-        // TODO implement here
-        return "";
+        return "Ubicacion{" +
+               "latitud=" + latitud +
+               ", longitud=" + longitud +
+               ", direccion='" + direccion + '\'' +
+               '}';
     }
-
 }
