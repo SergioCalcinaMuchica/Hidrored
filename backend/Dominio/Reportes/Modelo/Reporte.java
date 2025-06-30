@@ -1,232 +1,168 @@
 package Dominio.Reportes.Modelo;
 
 import Dominio.Usuarios.Modelo.ID;
-import Dominio.Usuarios.Modelo.Usuario;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-import java.io.*;
-import java.util.*;
-
-/**
- * 
- */
 public class Reporte {
 
-    /**
-     * Default constructor
-     */
-    public Reporte() {
-    }
-
-    /**
-     * 
-     */
     private ID id;
-
-    /**
-     * 
-     */
     private ID usuarioId;
-
-    /**
-     * 
-     */
     private String titulo;
-
-    /**
-     * 
-     */
     private String descripcion;
-
-    /**
-     * 
-     */
+    private Ubicacion ubicacion;
+    private EstadoReporte estado;
+    private TipoReporte tipo;
+    private PrioridadReporte prioridad;
     private LocalDateTime fechaCreacion;
-
-    /**
-     * 
-     */
     private LocalDateTime fechaActualizacion;
 
-    /**
-     * 
-     */
-    private PrioridadReporte prioridad;
+    // Colecciones de Value Objects y Entidades contenidas por el agregado
+    private List<HistorialCambio> historialCambios;
+    private List<ImagenAdjunta> imagenesAdjuntas;
+    private List<Comentario> comentarios;
 
-    /**
-     * 
-     */
-    public TipoReporte tipo;
-
-    /**
-     * 
-     */
-    public EstadoReporte estado;
-
-    /**
-     * 
-     */
-    public Comentario comentarios;
-
-    /**
-     * 
-     */
-    public HistorialCambio historialCambios;
-
-    /**
-     * 
-     */
-    public ImagenAdjunta imagenesAdjuntas;
-
-    /**
-     * 
-     */
-    public Usuario usuario;
-
-    /**
-     * @param id 
-     * @param usuarioId 
-     * @param titulo 
-     * @param descripcion 
-     * @param ubicacion 
-     * @param tipo 
-     * @param prioridad
-     */
-    public Reporte(ID id, ID usuarioId, String titulo, String descripcion, Ubicacion ubicacion, TipoReporte tipo, PrioridadReporte prioridad) {
-        // TODO implement here
+    // Constructor que inicializa el Reporte en un estado válido.
+    // Es el único constructor público para controlar la creación.
+    public Reporte(ID id, ID usuarioId, String titulo, String descripcion, Ubicacion ubicacion,
+                   EstadoReporte estado, TipoReporte tipo, PrioridadReporte prioridad,
+                   LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion,
+                   List<HistorialCambio> historialCambios) { // No incluimos colecciones vacías aquí
+        if (id == null || usuarioId == null || titulo == null || titulo.trim().isEmpty() ||
+            descripcion == null || descripcion.trim().isEmpty() || ubicacion == null ||
+            estado == null || tipo == null || prioridad == null || fechaCreacion == null || fechaActualizacion == null) {
+            throw new IllegalArgumentException("Todos los campos obligatorios de Reporte deben ser provistos.");
+        }
+        this.id = id;
+        this.usuarioId = usuarioId;
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.ubicacion = ubicacion;
+        this.estado = estado;
+        this.tipo = tipo;
+        this.prioridad = prioridad;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaActualizacion = fechaActualizacion;
+        this.historialCambios = new ArrayList<>(historialCambios); // Copia defensiva
+        this.imagenesAdjuntas = new ArrayList<>(); // Inicializa vacías
+        this.comentarios = new ArrayList<>(); // Inicializa vacías
     }
 
-    /**
-     * @param nuevoEstado 
-     * @param usuarioIdCambio 
-     * @param motivo
-     */
+    // --- Métodos de comportamiento de Dominio ---
+
     public void actualizarEstado(EstadoReporte nuevoEstado, ID usuarioIdCambio, String motivo) {
-        // TODO implement here
+        if (nuevoEstado == null) {
+            throw new IllegalArgumentException("El nuevo estado no puede ser nulo.");
+        }
+        // Lógica de transición de estados si la hay (ej. no se puede pasar de RESUELTO a PENDIENTE)
+        if (this.estado.equals(EstadoReporte.CERRADO)) {
+            throw new IllegalStateException("No se puede cambiar el estado de un reporte CERRADO.");
+        }
+        
+        String descripcionCambio = String.format("Estado cambiado de %s a %s. Motivo: %s",
+                                                this.estado.name(), nuevoEstado.name(), motivo);
+        this.historialCambios.add(new HistorialCambio(LocalDateTime.now(), descripcionCambio, usuarioIdCambio));
+        this.estado = nuevoEstado;
+        this.fechaActualizacion = LocalDateTime.now();
     }
 
-    /**
-     * @param nuevaDescripcion 
-     * @param usuarioIdCambio
-     */
     public void actualizarDescripcion(String nuevaDescripcion, ID usuarioIdCambio) {
-        // TODO implement here
+        if (nuevaDescripcion == null || nuevaDescripcion.trim().isEmpty()) {
+            throw new IllegalArgumentException("La nueva descripción no puede ser nula o vacía.");
+        }
+        String descripcionCambio = String.format("Descripción actualizada. Anterior: '%s', Nueva: '%s'",
+                                                this.descripcion, nuevaDescripcion);
+        this.historialCambios.add(new HistorialCambio(LocalDateTime.now(), descripcionCambio, usuarioIdCambio));
+        this.descripcion = nuevaDescripcion;
+        this.fechaActualizacion = LocalDateTime.now();
     }
 
-    /**
-     * @param imagen
-     */
     public void agregarImagenAdjunta(ImagenAdjunta imagen) {
-        // TODO implement here
+        if (imagen == null) {
+            throw new IllegalArgumentException("La imagen adjunta no puede ser nula.");
+        }
+        this.imagenesAdjuntas.add(imagen);
+        this.fechaActualizacion = LocalDateTime.now();
+        // Podrías añadir una entrada al historial de cambios si la adición de una imagen es significativa
     }
 
-    /**
-     * @param comentario
-     */
     public void agregarComentario(Comentario comentario) {
-        // TODO implement here
+        if (comentario == null) {
+            throw new IllegalArgumentException("El comentario no puede ser nulo.");
+        }
+        this.comentarios.add(comentario);
+        this.fechaActualizacion = LocalDateTime.now();
+        // Podrías añadir una entrada al historial de cambios
     }
 
-    /**
-     * @return
-     */
+    // --- Getters ---
     public ID getId() {
-        // TODO implement here
-        return null;
+        return id;
     }
 
-    /**
-     * @return
-     */
     public ID getUsuarioId() {
-        // TODO implement here
-        return null;
+        return usuarioId;
     }
 
-    /**
-     * @return
-     */
     public String getTitulo() {
-        // TODO implement here
-        return "";
+        return titulo;
     }
 
-    /**
-     * @return
-     */
     public String getDescripcion() {
-        // TODO implement here
-        return "";
+        return descripcion;
     }
 
-    /**
-     * @return
-     */
     public Ubicacion getUbicacion() {
-        // TODO implement here
-        return null;
+        return ubicacion;
     }
 
-    /**
-     * @return
-     */
     public EstadoReporte getEstado() {
-        // TODO implement here
-        return null;
+        return estado;
     }
 
-    /**
-     * @return
-     */
     public TipoReporte getTipo() {
-        // TODO implement here
-        return null;
+        return tipo;
     }
 
-    /**
-     * @return
-     */
     public PrioridadReporte getPrioridad() {
-        // TODO implement here
-        return null;
+        return prioridad;
     }
 
-    /**
-     * @return
-     */
     public LocalDateTime getFechaCreacion() {
-        // TODO implement here
-        return null;
+        return fechaCreacion;
     }
 
-    /**
-     * @return
-     */
     public LocalDateTime getFechaActualizacion() {
-        // TODO implement here
-        return null;
+        return fechaActualizacion;
     }
 
-    /**
-     * 
-     */
-    public void getHistorialCambios() {
-        // TODO implement here
+    // Copias defensivas para evitar modificaciones externas directas a las colecciones internas
+    public List<HistorialCambio> getHistorialCambios() {
+        return Collections.unmodifiableList(historialCambios);
     }
 
-    /**
-     * @return
-     */
     public List<ImagenAdjunta> getImagenesAdjuntas() {
-        // TODO implement here
-        return null;
+        return Collections.unmodifiableList(imagenesAdjuntas);
     }
 
-    /**
-     * @return
-     */
     public List<Comentario> getComentarios() {
-        // TODO implement here
-        return null;
+        return Collections.unmodifiableList(comentarios);
     }
 
+    // --- Métodos equals y hashCode (basados en ID para entidades) ---
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reporte reporte = (Reporte) o;
+        return Objects.equals(id, reporte.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

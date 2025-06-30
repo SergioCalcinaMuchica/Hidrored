@@ -3,54 +3,16 @@ package Dominio.Reportes;
 import Dominio.Reportes.Modelo.Reporte;
 import Dominio.Usuarios.Modelo.ID;
 
-import java.io.*;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-/**
- * 
- */
-public class IReporteRepository {
+public interface IReporteRepository {
 
-    /**
-     * Default constructor
-     */
-    public IReporteRepository() {
-    }
+    Reporte guardar(Reporte reporte);
 
+    Optional<Reporte> buscarPorId(ID id);
 
-    /**
-     * @param reporte 
-     * @return
-     */
-    public Reporte guardar(Reporte reporte) {
-        // TODO implement here
-        return null;
-    }
+    List<Reporte> buscarReportesPorUsuario(ID usuarioId);
 
-    /**
-     * @param id 
-     * @return
-     */
-    public Reporte buscarPorId(ID id) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param usuarioId 
-     * @return
-     */
-    public List<Reporte> buscarReportesPorUsuario(ID usuarioId) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @return
-     */
-    public List<Reporte> buscarReportesPendientes() {
-        // TODO implement here
-        return null;
-    }
-
+    List<Reporte> buscarReportesPendientes();
 }
