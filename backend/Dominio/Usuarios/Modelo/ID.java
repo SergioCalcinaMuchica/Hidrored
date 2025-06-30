@@ -1,61 +1,63 @@
 package Dominio.Usuarios.Modelo;
 
-import java.io.*;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID; // Importa UUID
 
-/**
- * 
- */
 public class ID {
 
-    /**
-     * Default constructor
-     */
-    public ID() {
-    }
-
-    /**
-     * 
-     */
     private UUID value;
 
-    /**
-     * 
-     */
-    public Usuario usuario;
-
-    /**
-     * @param other 
-     * @return
-     */
-    public boolean equals(UUID other) {
-        // TODO implement here
-        return false;
+    // Constructor privado para forzar la creación a través de métodos estáticos
+    private ID(UUID value) {
+        // Validar que el UUID no sea nulo
+        if (value == null) {
+            throw new IllegalArgumentException("El ID no puede ser nulo.");
+        }
+        this.value = value;
     }
 
-    /**
-     * @return
-     */
-    public String toString() {
-        // TODO implement here
-        return "";
+    // Constructor público para usar con el String ID desde la capa de aplicación/infraestructura
+    public ID(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID en formato String no puede ser nulo o vacío.");
+        }
+        try {
+            this.value = UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Formato de ID inválido: " + value, e);
+        }
     }
 
-    /**
-     * @return
-     */
+    // Método estático de fábrica para generar un nuevo ID
     public static ID generarNuevo() {
-        // TODO implement here
-        return null;
+        return new ID(UUID.randomUUID());
     }
 
-    /**
-     * @param value 
-     * @return
-     */
+    // Método estático de fábrica para crear un ID desde un String
     public static ID de(String value) {
-        // TODO implement here
-        return null;
+        return new ID(value);
     }
 
+    // Getter para acceder al valor UUID
+    public UUID getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ID id1 = (ID) o;
+        return Objects.equals(value, id1.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }
