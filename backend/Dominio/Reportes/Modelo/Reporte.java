@@ -1,5 +1,7 @@
 package Dominio.Reportes.Modelo;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import Dominio.Usuarios.Modelo.ID;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -7,9 +9,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Reporte {
+@Document(collection = "reportes")
 
+public class Reporte {
+    @Id
     private ID id;
+
     private ID usuarioId;
     private String titulo;
     private String descripcion;
@@ -27,28 +32,28 @@ public class Reporte {
 
     // Constructor que inicializa el Reporte en un estado válido.
     // Es el único constructor público para controlar la creación.
-    public Reporte(ID id, ID usuarioId, String titulo, String descripcion, Ubicacion ubicacion,
-                   EstadoReporte estado, TipoReporte tipo, PrioridadReporte prioridad,
-                   LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion,
-                   List<HistorialCambio> historialCambios) { // No incluimos colecciones vacías aquí
-        if (id == null || usuarioId == null || titulo == null || titulo.trim().isEmpty() ||
-            descripcion == null || descripcion.trim().isEmpty() || ubicacion == null ||
-            estado == null || tipo == null || prioridad == null || fechaCreacion == null || fechaActualizacion == null) {
+    public Reporte(ID usuarioId, String titulo, String descripcion, Ubicacion ubicacion, TipoReporte tipo,
+            PrioridadReporte prioridad) {
+        if (usuarioId == null || titulo == null || titulo.trim().isEmpty() ||
+                descripcion == null || descripcion.trim().isEmpty() || ubicacion == null ||
+                tipo == null || prioridad == null) {
             throw new IllegalArgumentException("Todos los campos obligatorios de Reporte deben ser provistos.");
         }
-        this.id = id;
+        this.id = ID.generarNuevo(); // Generamos un nuevo ID único
         this.usuarioId = usuarioId;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
-        this.estado = estado;
+        this.estado = EstadoReporte.PENDIENTE; // Estado inicial por defecto
         this.tipo = tipo;
         this.prioridad = prioridad;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaActualizacion = fechaActualizacion;
-        this.historialCambios = new ArrayList<>(historialCambios); // Copia defensiva
-        this.imagenesAdjuntas = new ArrayList<>(); // Inicializa vacías
-        this.comentarios = new ArrayList<>(); // Inicializa vacías
+        this.fechaCreacion = LocalDateTime.now();
+        this.fechaActualizacion = LocalDateTime.now();
+        // El historial se inicia con la creación del reporte
+        this.historialCambios.add(new HistorialCambio(LocalDateTime.now(), "Reporte creado.", usuarioId));
+    }
+
+    private Reporte() {
     }
 
     // --- Métodos de comportamiento de Dominio ---
@@ -57,13 +62,14 @@ public class Reporte {
         if (nuevoEstado == null) {
             throw new IllegalArgumentException("El nuevo estado no puede ser nulo.");
         }
-        // Lógica de transición de estados si la hay (ej. no se puede pasar de RESUELTO a PENDIENTE)
+        // Lógica de transición de estados si la hay (ej. no se puede pasar de RESUELTO
+        // a PENDIENTE)
         if (this.estado.equals(EstadoReporte.CERRADO)) {
             throw new IllegalStateException("No se puede cambiar el estado de un reporte CERRADO.");
         }
-        
+
         String descripcionCambio = String.format("Estado cambiado de %s a %s. Motivo: %s",
-                                                this.estado.name(), nuevoEstado.name(), motivo);
+                this.estado.name(), nuevoEstado.name(), motivo);
         this.historialCambios.add(new HistorialCambio(LocalDateTime.now(), descripcionCambio, usuarioIdCambio));
         this.estado = nuevoEstado;
         this.fechaActualizacion = LocalDateTime.now();
@@ -74,7 +80,7 @@ public class Reporte {
             throw new IllegalArgumentException("La nueva descripción no puede ser nula o vacía.");
         }
         String descripcionCambio = String.format("Descripción actualizada. Anterior: '%s', Nueva: '%s'",
-                                                this.descripcion, nuevaDescripcion);
+                this.descripcion, nuevaDescripcion);
         this.historialCambios.add(new HistorialCambio(LocalDateTime.now(), descripcionCambio, usuarioIdCambio));
         this.descripcion = nuevaDescripcion;
         this.fechaActualizacion = LocalDateTime.now();
@@ -86,16 +92,12 @@ public class Reporte {
         }
         this.imagenesAdjuntas.add(imagen);
         this.fechaActualizacion = LocalDateTime.now();
-        // Podrías añadir una entrada al historial de cambios si la adición de una imagen es significativa
     }
 
-    public void agregarComentario(Comentario comentario) {
-        if (comentario == null) {
-            throw new IllegalArgumentException("El comentario no puede ser nulo.");
-        }
-        this.comentarios.add(comentario);
+    public void agregarComentario(ID usuarioId, String contenido) {
+        Comentario nuevoComentario = Comentario.crearNuevo(usuarioId, contenido);
+        this.comentarios.add(nuevoComentario);
         this.fechaActualizacion = LocalDateTime.now();
-        // Podrías añadir una entrada al historial de cambios
     }
 
     // --- Getters ---
@@ -139,7 +141,8 @@ public class Reporte {
         return fechaActualizacion;
     }
 
-    // Copias defensivas para evitar modificaciones externas directas a las colecciones internas
+    // Copias defensivas para evitar modificaciones externas directas a las
+    // colecciones internas
     public List<HistorialCambio> getHistorialCambios() {
         return Collections.unmodifiableList(historialCambios);
     }
@@ -155,8 +158,10 @@ public class Reporte {
     // --- Métodos equals y hashCode (basados en ID para entidades) ---
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Reporte reporte = (Reporte) o;
         return Objects.equals(id, reporte.id);
     }

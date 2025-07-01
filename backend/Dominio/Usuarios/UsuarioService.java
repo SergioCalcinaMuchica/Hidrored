@@ -22,9 +22,9 @@ public class UsuarioService {
     public IUsuarioRepository repositorio;
 
     /**
-     * @param nombre 
-     * @param email 
-     * @param telefono 
+     * @param nombre
+     * @param email
+     * @param telefono
      * @return
      */
     public Usuario registrarNuevoUsuario(String nombre, String email, String telefono) {
@@ -33,8 +33,8 @@ public class UsuarioService {
     }
 
     /**
-     * @param email 
-     * @param password 
+     * @param email
+     * @param password
      * @return
      */
     public Usuario autenticarUsuario(String email, String password) {

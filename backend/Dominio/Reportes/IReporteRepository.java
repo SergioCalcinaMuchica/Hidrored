@@ -1,18 +1,16 @@
 package Dominio.Reportes;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 import Dominio.Reportes.Modelo.Reporte;
+import Dominio.Reportes.Modelo.EstadoReporte;
 import Dominio.Usuarios.Modelo.ID;
-
 import java.util.List;
-import java.util.Optional;
 
-public interface IReporteRepository {
+@Repository // Le indica a Spring que esta es una interfaz de Repositorio
+public interface IReporteRepository extends MongoRepository<Reporte, ID> {
 
-    Reporte guardar(Reporte reporte);
+    List<Reporte> findByUsuarioId(ID usuarioId);
+    List<Reporte> findByEstado(EstadoReporte estado);
 
-    Optional<Reporte> buscarPorId(ID id);
-
-    List<Reporte> buscarReportesPorUsuario(ID usuarioId);
-
-    List<Reporte> buscarReportesPendientes();
 }

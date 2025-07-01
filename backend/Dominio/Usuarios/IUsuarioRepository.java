@@ -1,48 +1,22 @@
+
 package Dominio.Usuarios;
 
-import Dominio.Usuarios.Modelo.Usuario;
 import Dominio.Usuarios.Modelo.ID;
+import Dominio.Usuarios.Modelo.Usuario;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import java.io.*;
-import java.util.*;
+import java.util.Optional;
 
-/**
- * 
- */
-public class IUsuarioRepository {
-
-    /**
-     * Default constructor
-     */
-    public IUsuarioRepository() {
-    }
-
+@Repository
+public interface IUsuarioRepository extends MongoRepository<Usuario, ID> {
 
     /**
-     * @param usuario 
-     * @return
+     * Busca un usuario por su dirección de correo electrónico.
+     * Spring Data generará la consulta automáticamente.
+     * 
+     * @param email El email a buscar.
+     * @return Un Optional que contiene el usuario si se encuentra.
      */
-    public Usuario guardar(Usuario usuario) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param id 
-     * @return
-     */
-    public Usuario buscarPorId(ID id) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param email 
-     * @return
-     */
-    public Usuario buscarPorEmail(String email) {
-        // TODO implement here
-        return null;
-    }
-
+    Optional<Usuario> findByEmail(String email);
 }

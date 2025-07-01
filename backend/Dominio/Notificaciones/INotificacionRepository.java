@@ -2,45 +2,26 @@ package Dominio.Notificaciones;
 
 import Dominio.Notificaciones.Modelo.Notificacion;
 import Dominio.Usuarios.Modelo.ID;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import java.io.*;
-import java.util.*;
+import java.util.List;
 
-/**
- * 
- */
-public class INotificacionRepository {
-
-    /**
-     * Default constructor
-     */
-    public INotificacionRepository() {
-    }
+@Repository
+public interface INotificacionRepository extends MongoRepository<Notificacion, ID> {
 
     /**
-     * @param notificacion 
-     * @return
+     * Busca todas las notificaciones para un usuario específico.
+     * @param usuarioId El ID del usuario.
+     * @return Una lista de notificaciones para ese usuario.
      */
-    public Notificacion guardar(Notificacion notificacion) {
-        // TODO implement here
-        return null;
-    }
+    List<Notificacion> findByUsuarioId(ID usuarioId);
 
     /**
-     * @return
+     * Busca notificaciones para un usuario, filtrando por estado de lectura.
+     * @param usuarioId El ID del usuario.
+     * @param leida true para buscar leídas, false para no leídas.
+     * @return Una lista de notificaciones que coinciden con los criterios.
      */
-    public List<Notificacion> buscarNotificacionesPendientes() {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param usuarioId 
-     * @return
-     */
-    public List<Notificacion> buscarNotificacionesPorUsuario(ID usuarioId) {
-        // TODO implement here
-        return null;
-    }
-
+    List<Notificacion> findByUsuarioIdAndLeida(ID usuarioId, boolean leida);
 }

@@ -1,106 +1,90 @@
+
 package Dominio.Usuarios.Modelo;
 
-import Dominio.Notificaciones.Modelo.Notificacion;
-import Dominio.Reportes.Modelo.Reporte;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.Objects;
 
-import java.io.*;
-import java.util.*;
-
-/**
- * 
- */
+@Document(collection = "usuarios")
 public class Usuario {
 
-    /**
-     * Default constructor
-     */
-    public Usuario() {
-    }
+    @Id
+    private ID id;
 
-    /**
-     * 
-     */
     private String nombre;
 
-    /**
-     * 
-     */
+    @Indexed(unique = true) // Asegura que no haya dos usuarios con el mismo email
     private String email;
 
-    /**
-     * 
-     */
     private String telefono;
 
-    /**
-     * 
-     */
-    public ID id;
+    // En DDD, no se deben mantener referencias directas a otros agregados.
+    // Las relaciones se manejan a través de IDs.
+    // Por lo tanto, eliminamos los campos 'notificaciones' y 'reportes'.
 
     /**
-     * 
+     * Constructor para crear un nuevo usuario.
+     * @param nombre El nombre del usuario.
+     * @param email El correo electrónico del usuario.
+     * @param telefono El teléfono del usuario.
      */
-    public Notificacion notificaciones;
-
-    /**
-     * 
-     */
-    public Reporte reportes;
-
-    /**
-     * @param id 
-     * @param nombre 
-     * @param email 
-     * @param telefono
-     */
-    public Usuario(ID id, String nombre, String email, String telefono) {
-        // TODO implement here
+    public Usuario(String nombre, String email, String telefono) {
+        if (nombre == null || nombre.trim().isEmpty() || email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre y el email son obligatorios.");
+        }
+        this.id = ID.generarNuevo();
+        this.nombre = nombre;
+        this.email = email;
+        this.telefono = telefono;
     }
 
     /**
-     * @param nuevoNombre
+     * Constructor vacío para uso de Spring Data.
      */
-    public void actualizarNombre(String nuevoNombre) {
-        // TODO implement here
+    private Usuario() {}
+
+    // --- Métodos de Comportamiento ---
+
+    public void actualizarDatos(String nuevoNombre, String nuevoTelefono) {
+        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
+            this.nombre = nuevoNombre;
+        }
+        if (nuevoTelefono != null) {
+            this.telefono = nuevoTelefono;
+        }
     }
 
-    /**
-     * @param nuevoEmail
-     */
-    public void cambiarEmail(String nuevoEmail) {
-        // TODO implement here
-    }
+    // --- Getters ---
 
-    /**
-     * @return
-     */
     public ID getId() {
-        // TODO implement here
-        return null;
+        return id;
     }
 
-    /**
-     * @return
-     */
-    public String getEmail() {
-        // TODO implement here
-        return "";
-    }
-
-    /**
-     * @return
-     */
     public String getNombre() {
-        // TODO implement here
-        return "";
+        return nombre;
     }
 
-    /**
-     * @return
-     */
+    public String getEmail() {
+        return email;
+    }
+
     public String getTelefono() {
-        // TODO implement here
-        return "";
+        return telefono;
     }
 
+    // --- equals y hashCode ---
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
