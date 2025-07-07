@@ -72,7 +72,6 @@ const ImproveIcon = () => (
 const HomePage: React.FC = () => {
   return (
     <div className="text-slate-800">
-      {/* Sección del Héroe */}
       <div className="text-center bg-white p-10 rounded-lg shadow-lg mb-8">
         <h1 className="text-5xl font-extrabold mb-3">Bienvenido a Hidrored</h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -80,6 +79,26 @@ const HomePage: React.FC = () => {
           incidencias del servicio de agua y desagüe en Arequipa. Juntos
           mejoramos nuestro entorno.
         </p>
+      </div>
+
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold mb-6 text-center text-white">
+          Nuestro Propósito
+        </h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          <IconCard icon={<ReportIcon />} title="Centralización de Reportes">
+            Proporcionar un canal único y accesible para que los usuarios puedan
+            informar sobre problemas de manera eficiente.
+          </IconCard>
+          <IconCard icon={<TrackIcon />} title="Transparencia y Seguimiento">
+            Ofrecer a los usuarios la capacidad de rastrear el estado de sus
+            reportes en tiempo real y recibir actualizaciones.
+          </IconCard>
+          <IconCard icon={<ImproveIcon />} title="Mejora de la Gestión">
+            Ayudar a las autoridades a recibir información detallada y
+            localizada de los problemas para una respuesta más rápida.
+          </IconCard>
+        </div>
       </div>
     </div>
   );
