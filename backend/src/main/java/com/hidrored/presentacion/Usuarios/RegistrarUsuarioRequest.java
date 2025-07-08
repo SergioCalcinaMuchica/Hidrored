@@ -1,32 +1,11 @@
 package com.hidrored.presentacion.Usuarios;
 
-import java.io.*;
-import java.util.*;
+import lombok.Data;
 
-/**
- * 
- */
+@Data
 public class RegistrarUsuarioRequest {
-
-    /**
-     * Default constructor
-     */
-    public RegistrarUsuarioRequest() {
-    }
-
-    /**
-     * 
-     */
-    public String nombre;
-
-    /**
-     * 
-     */
-    public String email;
-
-    /**
-     * 
-     */
-    public String telefono;
-
+  private String nombre;
+  private String email;
+  private String telefono;
+  private String password;
 }
