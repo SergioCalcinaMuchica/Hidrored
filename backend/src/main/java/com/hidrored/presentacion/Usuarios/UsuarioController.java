@@ -1,52 +1,30 @@
 package com.hidrored.presentacion.Usuarios;
 
-import com.hidrored.aplicacion.Usuarios.UsuarioApplicationService;
-
-import java.io.*;
-import java.util.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * 
- */
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UsuarioController {
 
-    /**
-     * Default constructor
-     */
-    public UsuarioController() {
-    }
+  @PostMapping("/registro")
+  public ResponseEntity<UsuarioResponse> registrarUsuario(@RequestBody RegistrarUsuarioRequest request) {
 
-    /**
-     * 
-     */
-    private UsuarioApplicationService usuarioApplicationService;
+    System.out.println(">>> Solicitud de registro recibida:");
+    System.out.println("Nombre: " + request.getNombre());
+    System.out.println("Email: " + request.getEmail());
+    System.out.println("Teléfono: " + request.getTelefono());
+    System.out.println("Password: " + request.getPassword());
 
-    /**
-     * @param @RequestBody request 
-     * @return
-     */
-    public UsuarioResponse registrarUsuario(RegistrarUsuarioRequest request) {
-        // TODO implement here
-        return null;
-    }
+    UsuarioResponse response = new UsuarioResponse();
+    response.setId(UUID.randomUUID().toString());
+    response.setNombre(request.getNombre());
+    response.setEmail(request.getEmail());
+    response.setTelefono(request.getTelefono());
 
-    /**
-     * @param @PathVariable id 
-     * @return
-     */
-    public ResponseEntity<UsuarioResponse> obtenerUsuarioPorId(String id) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param @RequestParam email 
-     * @return
-     */
-    public ResponseEntity<UsuarioResponse> obtenerUsuarioPorEmail(String email) {
-        // TODO implement here
-        return null;
-    }
-
+    return ResponseEntity.ok(response);
+  }
 }
