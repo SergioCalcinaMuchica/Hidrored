@@ -13,7 +13,7 @@ Thumbs.db             # Archivos de miniaturas de Windows
 # ===============================================
 # Backend (Spring Boot / Maven)
 # ===============================================
-/backend/target/                 # Directorio de salida de Maven (clases compiladas, JARs/WARs)
+/backend/target/               # Directorio de salida de Maven (clases compiladas, JARs/WARs)
 /backend/pom.xml.tag
 /backend/pom.xml.releaseBackup
 /backend/pom.xml.versionsBackup
@@ -26,6 +26,7 @@ Thumbs.db             # Archivos de miniaturas de Windows
 /backend/*.zip                   # Archivos zip generados por builds
 /backend/*.tar.gz
 /backend/hs_err_pid* # Archivos de error de JVM (core dumps)
+/backend/.settings/
 
 # IDE specific files for Java
 /backend/.gradle/
