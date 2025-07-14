@@ -3,7 +3,9 @@ import React, {
   useState,
   useContext,
   type ReactNode,
+  useMemo, useCallback
 } from "react";
+
 
 interface UserData {
   id: string;
@@ -25,16 +27,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<UserData | null>(null);
 
-  const login = (userData: UserData) => {
+  const login = useCallback((userData: UserData) => {
     setUser(userData);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    user,
+    login,
+    logout
+  }), [user, login, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
