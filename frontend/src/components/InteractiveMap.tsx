@@ -1,67 +1,70 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useEffect } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-import iconUrl from "leaflet/dist/images/marker-icon.png";
-import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
-import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+const MapConfig = {
+  defaultIcon: L.icon({
+    iconUrl: "/leaflet/marker-icon.png",
+    iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+    shadowUrl: "/leaflet/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  }),
+  initialize: function() {
+    L.Marker.prototype.options.icon = this.defaultIcon;
+  }
+};
 
-const DefaultIcon = L.icon({
-  iconUrl,
-  iconRetinaUrl,
-  shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
-
-interface Report {
+export interface Report {
   id: number;
-  position: L.LatLngExpression;
+  position: L.LatLngTuple;
   title: string;
   description: string;
 }
 
-const sampleReports: Report[] = [
-  {
-    id: 1,
-    position: [-16.419, -71.518],
-    title: "Fuga de agua grande",
-    description: "Fuga en la Av. Principal",
-  },
-  {
-    id: 2,
-    position: [-16.422, -71.515],
-    title: "Tubería rota",
-    description: "Tubería rota en el parque",
-  },
-  {
-    id: 3,
-    position: [-16.415, -71.52],
-    title: "Desborde de desagüe",
-    description: "Alcantarilla colapsada",
-  },
-];
+interface InteractiveMapProps {
+  reports: Report[];
+  onMapDoubleClick: (coords: L.LatLng) => void;
+}
 
-const InteractiveMap: React.FC = () => {
+const MapEvents: React.FC<{ onDoubleClick: (coords: L.LatLng) => void }> = ({ onDoubleClick }) => {
+  useMapEvents({
+    dblclick(e) {
+            console.log("Evento dblclick CAPTURADO en InteractiveMap:", e.latlng);
+      onDoubleClick(e.latlng);
+    },
+  });
+  return null;
+};
+
+const InteractiveMap: React.FC<InteractiveMapProps> = ({ reports, onMapDoubleClick }) => {
+  useEffect(() => {
+    MapConfig.initialize();
+  }, []);
+
   const mapCenter: L.LatLngExpression = [-16.42, -71.517];
 
   return (
     <MapContainer
       center={mapCenter}
       zoom={15}
+      // Este estilo es correcto.
       style={{ height: "100%", width: "100%", borderRadius: "8px" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
-     {sampleReports.map((report) => (
+      {reports.map((report) => (
         <Marker key={report.id} position={report.position}>
           <Popup>
             <h3 className="font-bold">{report.title}</h3>
@@ -69,6 +72,7 @@ const InteractiveMap: React.FC = () => {
           </Popup>
         </Marker>
       ))}
+      <MapEvents onDoubleClick={onMapDoubleClick} />
     </MapContainer>
   );
 };
