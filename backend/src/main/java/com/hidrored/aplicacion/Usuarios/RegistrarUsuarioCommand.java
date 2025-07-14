@@ -1,32 +1,15 @@
 package com.hidrored.aplicacion.Usuarios;
 
-import java.io.*;
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * 
- */
+@Getter
+@AllArgsConstructor
 public class RegistrarUsuarioCommand {
 
-    /**
-     * Default constructor
-     */
-    public RegistrarUsuarioCommand() {
-    }
-
-    /**
-     * 
-     */
-    private String nombre;
-
-    /**
-     * 
-     */
-    private String email;
-
-    /**
-     * 
-     */
-    private String telefono;
+  private final String nombre;
+  private final String email;
+  private final String telefono;
+  private final String password;
 
 }
