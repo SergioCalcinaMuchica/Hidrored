@@ -1,37 +1,35 @@
 package com.hidrored.aplicacion.Usuarios;
 
-import java.io.*;
-import java.util.*;
+import com.hidrored.dominio.Usuarios.Modelo.Usuario;
+import lombok.Getter;
 
-/**
- * 
- */
+@Getter
 public class UsuarioDTO {
 
-    /**
-     * Default constructor
-     */
-    public UsuarioDTO() {
-    }
+  private final String id;
+  private final String nombre;
+  private final String email;
+  private final String telefono;
 
-    /**
-     * 
-     */
-    public String id;
+  private UsuarioDTO(String id, String nombre, String email, String telefono) {
+    this.id = id;
+    this.nombre = nombre;
+    this.email = email;
+    this.telefono = telefono;
+  }
 
-    /**
-     * 
-     */
-    public String nombre;
-
-    /**
-     * 
-     */
-    public String email;
-
-    /**
-     * 
-     */
-    public String telefono;
-
+  /**
+   * Método de fábrica (factory method) para convertir una entidad de dominio
+   * a un DTO. Este es el método que faltaba.
+   * 
+   * @param usuario La entidad de dominio Usuario.
+   * @return Un nuevo objeto UsuarioDTO.
+   */
+  public static UsuarioDTO fromDomain(Usuario usuario) {
+    return new UsuarioDTO(
+        usuario.getId(),
+        usuario.getNombre(),
+        usuario.getEmail(),
+        usuario.getTelefono());
+  }
 }
