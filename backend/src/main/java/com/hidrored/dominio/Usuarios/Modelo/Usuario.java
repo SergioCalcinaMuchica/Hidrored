@@ -23,9 +23,8 @@ public class Usuario {
 
   private String password;
 
-  // Constructor privado, uso del 
-  private Usuario(String id, String nombre, String email, String telefono, String password) {
-    this.id = id;
+  public Usuario(String nombre, String email, String telefono, String password) {
+    this.id = UUID.randomUUID().toString();
     this.nombre = nombre;
     this.email = email;
     this.telefono = telefono;
@@ -33,18 +32,14 @@ public class Usuario {
   }
 
   private Usuario() {
-    // Requerido por Spring Data
-  }
-
-  public static Usuario crearConDatos(String nombre, String email, String telefono, String password) {
-    String idGenerado = UUID.randomUUID().toString();
-    return new Usuario(idGenerado, nombre, email, telefono, password);
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     Usuario usuario = (Usuario) o;
     return Objects.equals(id, usuario.id);
   }
