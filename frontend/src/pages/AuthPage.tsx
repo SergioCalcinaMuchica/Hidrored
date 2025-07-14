@@ -1,17 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, type FormEvent } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      const response = await axios.post("/api/usuarios/login", {
+        email,
+        password,
+      });
+
+      login(response.data);
+    } catch (err) {
+      console.error("Error en el inicio de sesión:", err);
+      setError("Credenciales inválidas. Por favor, inténtalo de nuevo.");
+    }
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        login();
-      }}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <p className="text-red-500 text-center text-sm mb-4">{error}</p>
+      )}
       <div>
         <label
           htmlFor="email-login"
@@ -22,6 +40,8 @@ const LoginForm: React.FC = () => {
         <input
           type="email"
           id="email-login"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
@@ -36,8 +56,10 @@ const LoginForm: React.FC = () => {
         <input
           type="password"
           id="password-login"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-black"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
       </div>
       <button
@@ -64,32 +86,50 @@ const RegisterForm: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
-      // La URL completa es http://localhost:8080/api/usuarios/registro
-      // Usamos el proxy de Vite, por lo que solo necesitamos la ruta relativa.
       const response = await axios.post("/api/usuarios/registro", formData);
-
       console.log("Registro exitoso!", response.data);
       alert(`Usuario ${response.data.nombre} registrado con éxito!`);
+      login(response.data);
+    } catch (err: any) {
+      // Usamos 'any' para poder inspeccionar el objeto de error
+      console.error("--- ERROR DETALLADO EN EL REGISTRO ---");
 
-      // Si el registro es exitoso, simulamos el inicio de sesión
-      login();
-    } catch (err) {
-      console.error("Error en el registro:", err);
-      setError("No se pudo completar el registro. Inténtalo de nuevo.");
-      alert(
-        "Error en el registro. Revisa la consola del navegador y del backend.",
-      );
+      if (err.response) {
+        // El backend respondió con un código de error (4xx o 5xx)
+        console.error("Data:", err.response.data);
+        console.error("Status:", err.response.status);
+        console.error("Headers:", err.response.headers);
+        // Usamos el mensaje del manejador de excepciones global
+        setError(err.response.data.message || "Error en el servidor.");
+      } else if (err.request) {
+        // La solicitud se hizo pero no se recibió respuesta (ej. backend caído)
+        console.error("Request:", err.request);
+        setError(
+          "No se pudo conectar con el servidor. ¿Está el backend corriendo?",
+        );
+      } else {
+        // Ocurrió un error al configurar la solicitud
+        console.error("Error", err.message);
+        setError("Ocurrió un error inesperado al enviar los datos.");
+      }
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {/* Mostramos el mensaje de error al usuario */}
+      {error && (
+        <p className="text-red-500 text-sm text-center font-semibold">
+          {error}
+        </p>
+      )}
+
+      {/* ... (inputs del formulario sin cambios) ... */}
       <div>
         <label
           htmlFor="nombre"
@@ -102,6 +142,7 @@ const RegisterForm: React.FC = () => {
           name="nombre"
           id="nombre"
           required
+          value={formData.nombre}
           onChange={handleChange}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
@@ -118,6 +159,7 @@ const RegisterForm: React.FC = () => {
           name="email"
           id="email"
           required
+          value={formData.email}
           onChange={handleChange}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
@@ -133,6 +175,7 @@ const RegisterForm: React.FC = () => {
           type="tel"
           name="telefono"
           id="telefono"
+          value={formData.telefono}
           onChange={handleChange}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />
@@ -149,6 +192,7 @@ const RegisterForm: React.FC = () => {
           name="password"
           id="password"
           required
+          value={formData.password}
           onChange={handleChange}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         />

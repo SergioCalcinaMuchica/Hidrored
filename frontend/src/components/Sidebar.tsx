@@ -105,7 +105,7 @@ const LogoutIcon = () => (
 );
 
 const Sidebar: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const activeLinkClass =
     "flex items-center p-4 text-white bg-blue-500 rounded-lg shadow-md";
@@ -159,14 +159,22 @@ const Sidebar: React.FC = () => {
       </nav>
 
       <div className="p-4 border-t border-blue-900">
-        {isAuthenticated ? (
-          <button
-            onClick={logout}
-            className="w-full flex items-center p-3 text-gray-300 bg-red-800 hover:bg-red-700 rounded-lg transition-colors"
-          >
-            <LogoutIcon />
-            <span>Cerrar Sesión</span>
-          </button>
+        {user ? (
+          <div>
+            <p className="text-center text-sm text-gray-400 mb-2">
+              Bienvenido,
+            </p>
+            <p className="text-center font-bold text-white mb-4">
+              {user.nombre}
+            </p>
+            <button
+              onClick={logout}
+              className="w-full flex items-center justify-center p-3 text-gray-300 bg-red-800 hover:bg-red-700 rounded-lg transition-colors"
+            >
+              <LogoutIcon />
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
         ) : (
           <Link
             to="/auth"
@@ -179,5 +187,4 @@ const Sidebar: React.FC = () => {
     </div>
   );
 };
-
 export default Sidebar;
