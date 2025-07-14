@@ -1,30 +1,45 @@
 package com.hidrored.presentacion.Usuarios;
 
+import com.hidrored.aplicacion.Usuarios.RegistrarUsuarioCommand;
+import com.hidrored.aplicacion.Usuarios.UsuarioApplicationService;
+import com.hidrored.aplicacion.Usuarios.UsuarioDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/usuarios")
-@CrossOrigin(origins = "http://localhost:5173")
 public class UsuarioController {
 
+  private final UsuarioApplicationService usuarioService;
+
+  public UsuarioController(UsuarioApplicationService usuarioService) {
+    this.usuarioService = usuarioService;
+  }
+
   @PostMapping("/registro")
-  public ResponseEntity<UsuarioResponse> registrarUsuario(@RequestBody RegistrarUsuarioRequest request) {
+  public ResponseEntity<UsuarioDTO> registrarUsuario(@RequestBody RegistrarUsuarioRequest request) {
+    RegistrarUsuarioCommand command = new RegistrarUsuarioCommand(
+        request.getNombre(),
+        request.getEmail(),
+        request.getTelefono(),
+        request.getPassword());
+    UsuarioDTO usuarioCreado = usuarioService.registrarUsuario(command);
+    return ResponseEntity.ok(usuarioCreado);
+  }
 
-    System.out.println(">>> Solicitud de registro recibida:");
-    System.out.println("Nombre: " + request.getNombre());
-    System.out.println("Email: " + request.getEmail());
-    System.out.println("Teléfono: " + request.getTelefono());
-    System.out.println("Password: " + request.getPassword());
-
-    UsuarioResponse response = new UsuarioResponse();
-    response.setId(UUID.randomUUID().toString());
-    response.setNombre(request.getNombre());
-    response.setEmail(request.getEmail());
-    response.setTelefono(request.getTelefono());
-
-    return ResponseEntity.ok(response);
+  /**
+   * Endpoint para el inicio de sesión de usuarios.
+   * 
+   * @param request Contiene el email y la contraseña.
+   * @return Los datos del usuario si el login es exitoso.
+   */
+  @PostMapping("/login")
+  public ResponseEntity<UsuarioDTO> login(@RequestBody LoginRequest request) {
+    try {
+      UsuarioDTO usuarioDTO = usuarioService.autenticarUsuario(request.getEmail(), request.getPassword());
+      return ResponseEntity.ok(usuarioDTO);
+    } catch (SecurityException e) {
+      return ResponseEntity.status(401).build();
+    }
   }
 }
