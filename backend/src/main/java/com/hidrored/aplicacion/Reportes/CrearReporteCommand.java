@@ -1,57 +1,19 @@
 package com.hidrored.aplicacion.Reportes;
 
-import java.io.*;
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * 
- */
+@Getter
+@AllArgsConstructor
 public class CrearReporteCommand {
 
-    /**
-     * Default constructor
-     */
-    public CrearReporteCommand() {
-    }
-
-    /**
-     * 
-     */
-    private String usuarioId;
-
-    /**
-     * 
-     */
-    private String titulo;
-
-    /**
-     * 
-     */
-    private String descripcion;
-
-    /**
-     * 
-     */
-    private Double latitud;
-
-    /**
-     * 
-     */
-    private Double longitud;
-
-    /**
-     * 
-     */
-    private String direccion;
-
-    /**
-     * 
-     */
-    private String tipo;
-
-    /**
-     * 
-     */
-    private String prioridad;
+  private final String usuarioId;
+  private final String titulo;
+  private final String descripcion;
+  private final Double latitud;
+  private final Double longitud;
+  private final String direccion;
+  private final String tipo;
+  private final String prioridad;
 
 }
