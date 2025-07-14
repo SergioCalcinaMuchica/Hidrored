@@ -1,90 +1,56 @@
-
 package com.hidrored.dominio.Usuarios.Modelo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Getter;
 import java.util.Objects;
+import java.util.UUID;
 
 @Document(collection = "usuarios")
+@Getter
 public class Usuario {
 
-    @Id
-    private ID id;
+  @Id
+  private String id;
 
-    private String nombre;
+  private String nombre;
 
-    @Indexed(unique = true) // Asegura que no haya dos usuarios con el mismo email
-    private String email;
+  @Indexed(unique = true)
+  private String email;
 
-    private String telefono;
+  private String telefono;
 
-    // En DDD, no se deben mantener referencias directas a otros agregados.
-    // Las relaciones se manejan a través de IDs.
-    // Por lo tanto, eliminamos los campos 'notificaciones' y 'reportes'.
+  private String password;
 
-    /**
-     * Constructor para crear un nuevo usuario.
-     * @param nombre El nombre del usuario.
-     * @param email El correo electrónico del usuario.
-     * @param telefono El teléfono del usuario.
-     */
-    public Usuario(String nombre, String email, String telefono) {
-        if (nombre == null || nombre.trim().isEmpty() || email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre y el email son obligatorios.");
-        }
-        this.id = ID.generarNuevo();
-        this.nombre = nombre;
-        this.email = email;
-        this.telefono = telefono;
-    }
+  // Constructor privado, uso del 
+  private Usuario(String id, String nombre, String email, String telefono, String password) {
+    this.id = id;
+    this.nombre = nombre;
+    this.email = email;
+    this.telefono = telefono;
+    this.password = password;
+  }
 
-    /**
-     * Constructor vacío para uso de Spring Data.
-     */
-    private Usuario() {}
+  private Usuario() {
+    // Requerido por Spring Data
+  }
 
-    // --- Métodos de Comportamiento ---
+  public static Usuario crearConDatos(String nombre, String email, String telefono, String password) {
+    String idGenerado = UUID.randomUUID().toString();
+    return new Usuario(idGenerado, nombre, email, telefono, password);
+  }
 
-    public void actualizarDatos(String nuevoNombre, String nuevoTelefono) {
-        if (nuevoNombre != null && !nuevoNombre.trim().isEmpty()) {
-            this.nombre = nuevoNombre;
-        }
-        if (nuevoTelefono != null) {
-            this.telefono = nuevoTelefono;
-        }
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Usuario usuario = (Usuario) o;
+    return Objects.equals(id, usuario.id);
+  }
 
-    // --- Getters ---
-
-    public ID getId() {
-        return id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    // --- equals y hashCode ---
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Usuario usuario = (Usuario) o;
-        return Objects.equals(id, usuario.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
 }
