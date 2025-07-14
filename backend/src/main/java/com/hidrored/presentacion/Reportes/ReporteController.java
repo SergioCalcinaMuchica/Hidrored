@@ -1,93 +1,47 @@
 package com.hidrored.presentacion.Reportes;
 
+import com.hidrored.aplicacion.Reportes.CrearReporteCommand;
 import com.hidrored.aplicacion.Reportes.ReporteApplicationService;
+import com.hidrored.aplicacion.Reportes.ReporteDTO;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.*;
-
-/**
- * 
- */
+@RestController
+@RequestMapping("/api/reportes")
 public class ReporteController {
 
-    /**
-     * Default constructor
-     */
-    public ReporteController() {
-    }
+  private final ReporteApplicationService reporteService;
 
-    /**
-     * 
-     */
-    private ReporteApplicationService reporteApplicationService;
+  public ReporteController(ReporteApplicationService reporteService) {
+    this.reporteService = reporteService;
+  }
 
-    /**
-     * @param @RequestHeader usuarioId 
-     * @param @RequestBody request 
-     * @return
-     */
-    public ReporteResponse crearReporte(String usuarioId, CrearReporteRequest  request) {
-        // TODO implement here
-        return null;
-    }
+  @PostMapping
+  public ResponseEntity<ReporteDTO> crearReporte(
+      @RequestHeader("usuarioId") String usuarioId,
+      @RequestParam("titulo") String titulo,
+      @RequestParam("descripcion") String descripcion,
+      @RequestParam("tipo") String tipo,
+      @RequestParam("prioridad") String prioridad,
+      @RequestParam("latitud") Double latitud,
+      @RequestParam("longitud") Double longitud,
+      @RequestParam("direccion") String direccion,
+      // La imagen es opcional, por eso 'required = false'
+      @RequestPart(value = "imagenFile", required = false) MultipartFile imagenFile) {
 
-    /**
-     * @param @PathVariable id 
-     * @param @RequestHeader usuarioIdCambio 
-     * @param @RequestBody request 
-     * @return
-     */
-    public ReporteResponse actualizarEstadoReporte(String id, String usuarioIdCambio, ActualizarEstadoReporteRequest request) {
-        // TODO implement here
-        return null;
-    }
+    CrearReporteCommand command = new CrearReporteCommand(
+        usuarioId,
+        titulo,
+        descripcion,
+        latitud,
+        longitud,
+        direccion,
+        tipo,
+        prioridad);
 
-    /**
-     * @param @PathVariable id 
-     * @param @RequestHeader usuarioId 
-     * @param @RequestBody request 
-     * @return
-     */
-    public ReporteResponse agregarComentario(String id, String  usuarioId, AgregarComentarioRequest request) {
-        // TODO implement here
-        return null;
-    }
+    ReporteDTO nuevoReporte = reporteService.crearReporte(command);
 
-    /**
-     * @param @PathVariable id 
-     * @param @RequestHeader usuarioId 
-     * @param @ModelAttribute request 
-     * @return
-     */
-    public ReporteResponse subirImagenAdjunta(String id, String usuarioId, SubirImagenAdjuntaRequest request) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param @PathVariable usuarioId 
-     * @return
-     */
-    public List<ReporteResponse> obtenerReportesPorUsuario(String usuarioId) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param @PathVariable id 
-     * @return
-     */
-    public ReporteResponse obtenerReportePorId(String id) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @return
-     */
-    public List<ReporteResponse> obtenerReportesPendientes() {
-        // TODO implement here
-        return null;
-    }
-
+    return ResponseEntity.ok(nuevoReporte);
+  }
 }
