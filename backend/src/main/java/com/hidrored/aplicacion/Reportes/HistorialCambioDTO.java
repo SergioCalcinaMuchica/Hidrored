@@ -1,33 +1,22 @@
 package com.hidrored.aplicacion.Reportes;
 
-import java.io.*;
-import java.util.*;
+import com.hidrored.dominio.Reportes.Modelo.HistorialCambio;
+import lombok.Getter;
+import java.time.format.DateTimeFormatter;
 
-/**
- * 
- */
+@Getter
 public class HistorialCambioDTO {
+  private final String fechaCambio;
+  private final String descripcion;
+  private final String usuarioIdCambio;
 
-    /**
-     * Default constructor
-     */
-    public HistorialCambioDTO() {
-    }
+  private HistorialCambioDTO(HistorialCambio historial) {
+    this.fechaCambio = historial.getFechaCambio().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    this.descripcion = historial.getDescripcion();
+    this.usuarioIdCambio = historial.getUsuarioIdCambio();
+  }
 
-    /**
-     * 
-     */
-    public String fechaCambio;
-
-    /**
-     * 
-     */
-    public String descripcion;
-
-    /**
-     * 
-     */
-    public String usuarioIdCambio;
-
-
+  public static HistorialCambioDTO fromDomain(HistorialCambio historial) {
+    return new HistorialCambioDTO(historial);
+  }
 }
