@@ -1,32 +1,14 @@
 package com.hidrored.aplicacion.Reportes;
 
-import java.io.*;
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * 
- */
+@Getter
+@AllArgsConstructor
 public class AgregarComentarioCommand {
 
-    /**
-     * Default constructor
-     */
-    public AgregarComentarioCommand() {
-    }
+  private final String reporteId;
 
-    /**
-     * 
-     */
-    private String reporteId;
-
-    /**
-     * 
-     */
-    private String usuarioId;
-
-    /**
-     * 
-     */
-    private String contenido;
-
+  private final String usuarioId;
+  private final String contenido;
 }

@@ -1,42 +1,17 @@
 package com.hidrored.aplicacion.Reportes;
 
-import java.io.*;
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * 
- */
+@Getter
+@AllArgsConstructor
 public class SubirImagenAdjuntaCommand {
 
-    /**
-     * Default constructor
-     */
-    public SubirImagenAdjuntaCommand() {
-    }
+  private final String reporteId;
 
-    /**
-     * 
-     */
-    private String reporteId;
-
-    /**
-     * 
-     */
-    private String nombreArchivo;
-
-    /**
-     * 
-     */
-    private String tipoMime;
-
-    /**
-     * 
-     */
-    private Long tamanioBytes;
-
-    /**
-     * 
-     */
-    private String urlImagen;
+  private final String nombreArchivo;
+  private final String tipoMime;
+  private final Long tamanioBytes;
+  private final String urlImagen;
 
 }
