@@ -1,5 +1,6 @@
 package com.hidrored.config;
 
+import com.hidrored.exception.SecurityConfigurationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,7 +30,7 @@ public class SecurityConfig {
     return http.build();
     } catch (Exception e) {
       // Se captura el error y se lanza uno con un mensaje personalizado
-      throw new RuntimeException("Error configuring security", e);
+      throw new SecurityConfigurationException("Error al configurar la seguridad", e);
     }
   }
 }
