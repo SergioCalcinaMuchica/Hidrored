@@ -26,41 +26,50 @@ En cuanto al Tratamiento de Errores, SonarLint detectó el uso incorrecto de una
 
 Finalmente, en la categoría de Clases, se respetó el principio de responsabilidad única. WebConfig se encarga exclusivamente de configurar CORS, mientras que SecurityConfig gestiona la seguridad de la aplicación. Esta separación clara entre clases mejora la cohesión del código y permite mantener cada módulo enfocado en una tarea específica.
 
-LABORATORIO 12
+# 🧪 Laboratorio 12 - Principios SOLID
+---
 
-1. S - Principio de Responsabilidad Única (Single Responsibility Principle)
-Cada clase en la implementación cumple una única función bien definida.
-SecurityConfig se encarga exclusivamente de la configuración de seguridad de la aplicación.
+## ✅ Principios SOLID aplicados
 
+### 1. S - Principio de Responsabilidad Única (Single Responsibility Principle)
 
-WebConfig tiene como única responsabilidad habilitar CORS.
+Cada clase en la implementación cumple una única función bien definida:
 
+- `SecurityConfig` se encarga exclusivamente de la configuración de seguridad de la aplicación.
+- `WebConfig` tiene como única responsabilidad habilitar CORS.
+- En el frontend, `IconCard` es un componente de presentación que encapsula un diseño reutilizable.
 
-En el frontend, IconCard es un componente de presentación que encapsula un diseño reutilizable.
+Este diseño favorece la mantenibilidad. Si una parte del sistema requiere cambios (por ejemplo, CORS), solo se modifica una clase específica sin afectar otras.
 
+---
 
-Este diseño favorece la mantenibilidad, ya que si una parte del sistema requiere cambios (por ejemplo, CORS), solo se modifica una clase específica sin afectar otras.
-2. O - Principio Abierto/Cerrado (Open/Closed Principle)
-El código está diseñado para permitir extensiones sin modificar la lógica existente.
-El componente IconCard puede recibir diferentes íconos y contenidos a través de props, sin necesidad de modificar su implementación interna.
+### 2. O - Principio Abierto/Cerrado (Open/Closed Principle)
 
+El código está diseñado para permitir extensiones sin modificar la lógica existente:
 
-SecurityConfig puede extenderse fácilmente con nuevos filtros de seguridad o rutas protegidas, sin alterar la estructura base del método filterChain.
+- El componente `IconCard` puede recibir diferentes íconos y contenidos a través de props, sin necesidad de modificar su implementación interna.
+- `SecurityConfig` puede extenderse fácilmente con nuevos filtros de seguridad o rutas protegidas, sin alterar su estructura base.
 
+Esto permite agregar nuevas funcionalidades sin romper las ya existentes, facilitando la evolución del sistema.
 
-Esto permite agregar nueva funcionalidad sin romper la ya existente, facilitando el crecimiento del sistema.
-3. I - Principio de Segregación de Interfaces (Interface Segregation Principle)
-En WebConfig, solo se implementa la interfaz necesaria: WebMvcConfigurer.
-Se sobreescribe únicamente el método addCorsMappings(), sin forzar la implementación de métodos que no se necesitan.
- Esto demuestra que la clase interactúa solo con lo que requiere, sin depender de métodos o contratos innecesarios.
+---
 
+### 3. I - Principio de Segregación de Interfaces (Interface Segregation Principle)
 
+En `WebConfig`, solo se implementa la interfaz necesaria: `WebMvcConfigurer`.
 
-4. D - Principio de Inversión de Dependencias (Dependency Inversion Principle)
-En SecurityConfig, se usa la anotación @Bean para definir PasswordEncoder, desacoplando la clase de la implementación concreta.
-En lugar de instanciar directamente BCryptPasswordEncoder, se inyecta a través de Spring como una abstracción (PasswordEncoder), permitiendo reemplazar la implementación si fuera necesario.
+- Se sobreescribe únicamente el método `addCorsMappings()`, sin verse forzado a implementar métodos innecesarios.
+- Esto demuestra que la clase interactúa solo con lo que necesita, evitando depender de interfaces grandes o genéricas.
 
+---
 
-Esto favorece la flexibilidad y la posibilidad de realizar pruebas con otras implementaciones del encoder sin cambiar la lógica del sistema.
+### 4. D - Principio de Inversión de Dependencias (Dependency Inversion Principle)
 
+En `SecurityConfig`, se usa la anotación `@Bean` para definir `PasswordEncoder`, desacoplando la clase de la implementación concreta:
 
+- En lugar de instanciar directamente `BCryptPasswordEncoder`, se inyecta a través de Spring como una abstracción (`PasswordEncoder`).
+- Esto permite reemplazar la implementación en el futuro si es necesario.
+
+Este diseño mejora la flexibilidad y facilita las pruebas o adaptaciones futuras sin tocar la lógica de seguridad.
+
+---
