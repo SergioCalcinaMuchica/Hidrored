@@ -1,106 +1,85 @@
 package com.hidrored.aplicacion.Reportes;
 
-import com.hidrored.dominio.Reportes.ReporteService;
-import com.hidrored.dominio.Usuarios.UsuarioService;
+import com.hidrored.dominio.Reportes.IReporteRepository;
+import com.hidrored.dominio.Reportes.Modelo.*;
+import com.hidrored.dominio.Usuarios.IUsuarioRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
-import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * 
- */
+@Service
 public class ReporteApplicationService {
 
-    /**
-     * Default constructor
-     */
-    public ReporteApplicationService() {
-    }
+  private final IReporteRepository reporteRepository;
+  private final IUsuarioRepository usuarioRepository;
 
-    /**
-     * 
-     */
-    private ReporteService reporteService;
+  public ReporteApplicationService(IReporteRepository reporteRepository, IUsuarioRepository usuarioRepository) {
+    this.reporteRepository = reporteRepository;
+    this.usuarioRepository = usuarioRepository;
+  }
 
-    /**
-     * 
-     */
-    private UsuarioService usuarioService;
+  @Transactional
+  public ReporteDTO crearReporte(CrearReporteCommand command) {
+    usuarioRepository.findById(command.getUsuarioId())
+        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + command.getUsuarioId()));
 
-    /**
-     * @param command 
-     * @return
-     */
-    public ReporteDTO crearReporte(CrearReporteCommand command) {
-        // TODO implement here
-        return null;
-    }
+    Ubicacion ubicacion = new Ubicacion(command.getLatitud(), command.getLongitud(), command.getDireccion());
 
-    /**
-     * @param command 
-     * @return
-     */
-    public ReporteDTO actualizarEstadoReporte(ActualizarEstadoReporteCommand command) {
-        // TODO implement here
-        return null;
-    }
+    Reporte nuevoReporte = new Reporte(
+        command.getUsuarioId(),
+        command.getTitulo(),
+        command.getDescripcion(),
+        ubicacion,
+        TipoReporte.valueOf(command.getTipo().toUpperCase()),
+        PrioridadReporte.valueOf(command.getPrioridad().toUpperCase()));
 
-    /**
-     * @param command 
-     * @return
-     */
-    public ReporteDTO agregarComentarioAReporte(AgregarComentarioCommand command) {
-        // TODO implement here
-        return null;
-    }
+    Reporte reporteGuardado = reporteRepository.save(nuevoReporte);
+    return ReporteDTO.fromDomain(reporteGuardado);
+  }
 
-    /**
-     * @param command 
-     * @return
-     */
-    public ReporteDTO subirImagenAdjuntaAReporte(SubirImagenAdjuntaCommand command) {
-        // TODO implement here
-        return null;
-    }
+  @Transactional
+  public ReporteDTO agregarComentarioAReporte(AgregarComentarioCommand command) {
+    Reporte reporte = reporteRepository.findById(command.getReporteId())
+        .orElseThrow(() -> new IllegalStateException("Reporte no encontrado"));
 
-    /**
-     * @param usuarioId 
-     * @return
-     */
-    public List<ReporteDTO> obtenerReportesPorUsuario(String usuarioId) {
-        // TODO implement here
-        return null;
-    }
+    usuarioRepository.findById(command.getUsuarioId())
+        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-    /**
-     * @param reporteId 
-     * @return
-     */
-    public ReporteDTO obtenerReportePorId(String reporteId) {
-        // TODO implement here
-        return null;
-    }
+    reporte.agregarComentario(command.getUsuarioId(), command.getContenido());
 
-    /**
-     * @return
-     */
-    public List<ReporteDTO> obtenerReportesPendientes() {
-        // TODO implement here
-        return null;
-    }
+    Reporte reporteActualizado = reporteRepository.save(reporte);
+    return ReporteDTO.fromDomain(reporteActualizado);
+  }
 
-    /**
-     * 
-     */
-    public void Operation1() {
-        // TODO implement here
-    }
+  @Transactional
+  public ReporteDTO actualizarEstadoReporte(ActualizarEstadoReporteCommand command) {
+    Reporte reporte = reporteRepository.findById(command.getReporteId())
+        .orElseThrow(() -> new IllegalStateException("Reporte no encontrado"));
 
-    /**
-     * 
-     */
-    public void Operation2() {
-        // TODO implement here
-    }
+    usuarioRepository.findById(command.getUsuarioIdCambio())
+        .orElseThrow(() -> new IllegalArgumentException("Usuario que realiza el cambio no encontrado"));
 
+    EstadoReporte nuevoEstado = EstadoReporte.valueOf(command.getNuevoEstado().toUpperCase());
+
+    reporte.actualizarEstado(nuevoEstado, command.getUsuarioIdCambio(), command.getMotivo());
+
+    Reporte reporteActualizado = reporteRepository.save(reporte);
+    return ReporteDTO.fromDomain(reporteActualizado);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ReporteDTO> obtenerReportesPorUsuario(String usuarioId) {
+    return reporteRepository.findByUsuarioId(usuarioId).stream()
+        .map(ReporteDTO::fromDomain)
+        .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public ReporteDTO obtenerReportePorId(String reporteId) {
+    return reporteRepository.findById(reporteId)
+        .map(ReporteDTO::fromDomain)
+        .orElse(null);
+  }
 }

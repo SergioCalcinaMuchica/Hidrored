@@ -1,37 +1,14 @@
 package com.hidrored.aplicacion.Reportes;
 
-import java.io.*;
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * 
- */
+@Getter
+@AllArgsConstructor
 public class ActualizarEstadoReporteCommand {
+  private final String reporteId;
 
-    /**
-     * Default constructor
-     */
-    public ActualizarEstadoReporteCommand() {
-    }
-
-    /**
-     * 
-     */
-    private String reporteId;
-
-    /**
-     * 
-     */
-    private String nuevoEstado;
-
-    /**
-     * 
-     */
-    private String usuarioIdCambio;
-
-    /**
-     * 
-     */
-    private String motivo;
-
+  private final String nuevoEstado;
+  private final String usuarioIdCambio;
+  private final String motivo;
 }

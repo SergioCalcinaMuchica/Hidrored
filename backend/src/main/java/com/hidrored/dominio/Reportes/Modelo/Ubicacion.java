@@ -4,53 +4,55 @@ import java.util.Objects;
 
 public class Ubicacion {
 
-    private Double latitud;
-    private Double longitud;
-    private String direccion;
+  private Double latitud;
+  private Double longitud;
+  private String direccion;
 
-    public Ubicacion(Double latitud, Double longitud, String direccion) {
-        // Validaciones básicas, ej., que no sean nulos para ubicaciones requeridas
-        if (latitud == null || longitud == null || direccion == null || direccion.trim().isEmpty()) {
-            throw new IllegalArgumentException("Latitud, longitud y dirección no pueden ser nulos o vacíos.");
-        }
-        this.latitud = latitud;
-        this.longitud = longitud;
-        this.direccion = direccion;
-    }
+  public Ubicacion(Double latitud, Double longitud, String direccion) {
 
-    public Double getLatitud() {
-        return latitud;
+    if (latitud == null || longitud == null || direccion == null || direccion.trim().isEmpty()) {
+      throw new IllegalArgumentException("Latitud, longitud y dirección no pueden ser nulos o vacíos.");
     }
+    this.latitud = latitud;
+    this.longitud = longitud;
+    this.direccion = direccion;
+  }
 
-    public Double getLongitud() {
-        return longitud;
-    }
+  public Double getLatitud() {
+    return latitud;
+  }
 
-    public String getDireccion() {
-        return direccion;
-    }
+  public Double getLongitud() {
+    return longitud;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ubicacion ubicacion = (Ubicacion) o;
-        return Objects.equals(latitud, ubicacion.latitud) &&
-               Objects.equals(longitud, ubicacion.longitud) &&
-               Objects.equals(direccion, ubicacion.direccion);
-    }
+  public String getDireccion() {
+    return direccion;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(latitud, longitud, direccion);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Ubicacion ubicacion = (Ubicacion) o;
+    return Objects.equals(latitud, ubicacion.latitud) &&
+        Objects.equals(longitud, ubicacion.longitud) &&
+        Objects.equals(direccion, ubicacion.direccion);
+  }
 
-    @Override
-    public String toString() {
-        return "Ubicacion{" +
-               "latitud=" + latitud +
-               ", longitud=" + longitud +
-               ", direccion='" + direccion + '\'' +
-               '}';
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(latitud, longitud, direccion);
+  }
+
+  @Override
+  public String toString() {
+    return "Ubicacion{" +
+        "latitud=" + latitud +
+        ", longitud=" + longitud +
+        ", direccion='" + direccion + '\'' +
+        '}';
+  }
 }
