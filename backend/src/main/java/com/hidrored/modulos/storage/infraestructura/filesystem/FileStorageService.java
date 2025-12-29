@@ -1,4 +1,4 @@
-package com.hidrored.aplicacion.reportes;
+package com.hidrored.modulos.storage.infraestructura.filesystem;
 
 import com.hidrored.aplicacion.reportes.excepciones.StorageException;
 import com.hidrored.dominio.reportes.modelo.ImagenAdjunta;
